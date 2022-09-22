@@ -89,3 +89,12 @@ for t in ${array[@]}; do
 
 done
 
+echo "********************* Processing Experiment Data  ************************************"
+python3 gettikz_avr_bw.py -d $trace --cca $scen --size $data
+echo -e "--------------------------------------------------------------------------------------\n"
+echo "0) Raw experiment data  stored in dir: ["$logdir"]"
+echo "1) Goodput (flow duration) with 95th CI stored in : ["$scen".goodput.95th.csv]"
+echo "2) EWMA (window=50) of RTT increase (aggregates the longest flow in each run with 95th CI): ["$scen".RTT.95th.csv]"
+echo "--------------------------------------------------------------------------------------"
+
+#python3 gettikz_avr_bw.py -d $trace --cca $scen --size $data
