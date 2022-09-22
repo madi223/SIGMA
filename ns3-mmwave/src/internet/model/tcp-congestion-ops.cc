@@ -129,7 +129,7 @@ TcpNewReno::SlowStart (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
   if (segmentsAcked >= 1)
     {
       tcb->m_cWnd += tcb->m_segmentSize;
-      std::cout<<"IM IN SS PHASE "<<std::endl;
+      //std::cout<<"IM IN SS PHASE "<<std::endl;
       NS_LOG_INFO ("In SlowStart, updated to cwnd " << tcb->m_cWnd << " ssthresh " << tcb->m_ssThresh);
       return segmentsAcked - 1;
     }

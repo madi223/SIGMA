@@ -40,7 +40,7 @@
 #include <ctime>
 #include <stdlib.h>
 #include <list>
-
+#include <boost/algorithm/string.hpp>
 
 using namespace ns3;
 #define TCP_PROTOCOL     "ns3::TcpBbr"
@@ -112,6 +112,7 @@ int main (int argc, char *argv[])
         double noiseFigure = 9.0; // Noise figure for both eNB and UE [dB]
         int buff = 10;
 	std::string pacingRate = "800Mbps";
+	std::string cca = "Cubic";
 
 	// Command line arguments
 	CommandLine cmd;
@@ -138,6 +139,7 @@ int main (int argc, char *argv[])
         cmd.AddValue ("run", "run number",run);
         cmd.AddValue("dynIW","Set RW value to BDP", dynIW);
 	cmd.AddValue("numUE","Set Number of UEs in each Cell", nodeNum);
+	cmd.AddValue("cca","Set the UL Congestion Control Algorithm",cca);
 	cmd.Parse(argc, argv);
         RngSeedManager::SetRun (run);
 	Config::SetDefault("ns3::LteEnbRrc::SecondaryCellHandoverMode", EnumValue(2));
@@ -176,11 +178,19 @@ int main (int argc, char *argv[])
 	Config::SetDefault ("ns3::LteRlcUmLowLat::MaxTxBufferSize", UintegerValue (buff*1024*1024));
 	Config::SetDefault ("ns3::LteRlcAm::StatusProhibitTimer", TimeValue(MilliSeconds(1.0)));
 	Config::SetDefault ("ns3::LteRlcAm::MaxTxBufferSize", UintegerValue (buff*1024*1024));
-	Config::SetDefault ("ns3::TcpL4Protocol::SocketType",TypeIdValue (TcpNewReno::GetTypeId ()));
-	if(cubic)
-	Config::SetDefault ("ns3::TcpL4Protocol::SocketType",TypeIdValue (/*TcpNewReno*/TcpCubic::GetTypeId ()));
-	if(bbr)
-	  Config::SetDefault ("ns3::TcpL4Protocol::SocketType",  TypeIdValue (TcpBbr::GetTypeId ())/*TypeIdValue (TcpNewReno::GetTypeId ())*/);
+	//Config::SetDefault ("ns3::TcpL4Protocol::SocketType",TypeIdValue (TcpNewReno::GetTypeId ()));
+
+	boost::to_upper(cca);
+	if (cca.compare("BBR") == 0){
+	  Config::SetDefault ("ns3::TcpL4Protocol::SocketType",  TypeIdValue (TcpBbr::GetTypeId ()));
+	}
+	else if ((cca.compare("NEWRENO") == 0)||(cca.compare("RENO") == 0)){
+	  Config::SetDefault ("ns3::TcpL4Protocol::SocketType",TypeIdValue (TcpNewReno::GetTypeId ()));
+	}
+	else {
+	  Config::SetDefault ("ns3::TcpL4Protocol::SocketType",TypeIdValue (TcpCubic::GetTypeId ()));
+	}
+	
 	Config::SetDefault ("ns3::MmWave3gppPropagationLossModel::InCar",BooleanValue(false));
 	Config::SetDefault ("ns3::MmWave3gppPropagationLossModel::ChannelCondition",StringValue(condition));
         Config::SetDefault ("ns3::MmWave3gppPropagationLossModel::Scenario", StringValue(scenario));
@@ -455,7 +465,7 @@ int main (int argc, char *argv[])
 	uint16_t ulPort = 1234; //2000;
 	ApplicationContainer clientApps;
 	ApplicationContainer serverApps;
-
+#if 0
         TypeId tid;
 	if (scen == 6)
 	  {
@@ -471,7 +481,7 @@ int main (int argc, char *argv[])
 	  {
 	    Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpBbr::GetTypeId ()));
 	  }
-
+#endif
 	
         for (int i=0; i<ueNodes.GetN();i++)
 	  {
