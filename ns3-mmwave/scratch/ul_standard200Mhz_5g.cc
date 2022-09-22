@@ -528,7 +528,7 @@ std::cout<<"after tcp"<<std::endl;
 
    mmwaveHelper -> EnableTraces();
    // pcap
-   csma.EnablePcapAll("csma");
+   //csma.EnablePcapAll("csma");
   serverApps.Start(Seconds(AppStartTime));
   clientApps.Start(Seconds(AppStartTime));
   serverApps.Stop(Seconds(simTime));
