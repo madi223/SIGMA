@@ -22,7 +22,9 @@ args = parser.parse_args()
 ##############################
 #matplotlib.rcParams['text.usetex'] = True
 #sns.set_context("paper")
-sns.set(style="whitegrid", palette="pastel")
+#sns.set(style="whitegrid", palette="pastel")
+sns.set(style="whitegrid", palette="hls")
+sns.color_palette("hls", 8)
 #sns.set_context("paper", font_scale=1.9,rc={"lines.linewidth": 9})
 sns.set_context("paper",font_scale=1.9, rc={"lines.linewidth": 6.5})#font_scale=1.5,rc={"lines.linewidth": 2.5})
 #sns.set(style="ticks", rc={"lines.linewidth": 2.5})

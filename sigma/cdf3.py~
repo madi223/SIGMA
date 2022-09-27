@@ -1,0 +1,111 @@
+import pandas as pd
+import numpy as np
+import argparse
+import time
+from datetime import datetime
+import sys
+import os
+import csv
+from scipy.stats import t
+from scipy import sqrt
+from statistics import variance, mean
+import seaborn as sns
+import matplotlib
+import matplotlib.pyplot as plt
+plt.rcParams['pdf.fonttype'] = 42
+
+######## ARGS definition ######
+parser = argparse.ArgumentParser()
+parser.add_argument("--c1","-a",help="absolute path of dataset.csv",required=True)
+parser.add_argument("--c8","-b",help="absolute path of dataset.csv",required=True)
+parser.add_argument("--b1","-c",help="absolute path of dataset.csv",required=True)
+parser.add_argument("--b2","-d",help="absolute path of dataset.csv",required=True)
+parser.add_argument("--new",help="draw a barplot",action="store_true")
+args = parser.parse_args()
+##############################
+#matplotlib.rcParams['text.usetex'] = True
+#sns.set_context("paper")
+sns.set(style="whitegrid", palette="pastel")
+#sns.set_context("paper", font_scale=1.9,rc={"lines.linewidth": 9})
+sns.set_context("paper",font_scale=1.9, rc={"lines.linewidth": 6.5})#font_scale=1.5,rc={"lines.linewidth": 2.5})
+#sns.set(style="ticks", rc={"lines.linewidth": 2.5})
+cubic1 = args.c1
+cubic8 = args.c8
+bbr1 = args.b1
+bbr8 = args.b2
+c1data = pd.read_csv(cubic1)
+c8data = pd.read_csv(cubic8)
+b1data = pd.read_csv(bbr1)
+b8data = pd.read_csv(bbr8)
+if args.new:
+    c1data.columns = ['time','rtt','error']
+    b1data.columns = ['time','rtt','error']
+    c8data.columns = ['time','rtt','error']
+    b8data.columns = ['time','rtt','error']
+else:
+    c1data.columns = ['time','rtt','error','bw','bwerror']
+    b1data.columns = ['time','rtt','error','bw','bwerror']
+    c8data.columns = ['time','rtt','error','bw','bwerror']
+    b8data.columns = ['time','rtt','error','bw','bwerror']
+#dataset.columns = ['time','cwnd','rtt','throughput','ranBw','tbs','inflight','state','dst','src']
+#dataset.columns = ['time','rtt','cwnd']
+#tab = []
+#f = open(Data+".st","w")
+'''
+product = {'month' : [1,2,3,4,5,6,7,8,9,10,11,12],'demand':[290,260,288,300,310,303,329,340,316,330,308,310]}
+df = pd.DataFrame(product)
+print (df)
+#df.head()
+
+df['pandas_SMA_3'] = df.iloc[:,0].rolling(window=3).mean()
+df.head()
+df['EMA'] = df['demand'].ewm(span=3,adjust=False).mean()
+df.head()
+'''
+# dropping ALL duplicte values 
+#dataset.drop_duplicates(subset ="time", 
+#                     keep = 'last', inplace = True)
+
+ 
+#dataset['SMA_200'] = dataset['rtt'].ewm(span=200,adjust=False).mean()
+#dataset['rtt_200'] = dataset['rtt'].expanding(min_periods=50).mean()
+#dataset['bw_100'] = dataset['inflight'].expanding(min_periods=50).mean()
+#dataset['bw_200'] = dataset['inflight'].ewm(span=100,adjust=False).mean()
+#df = dataset.iloc[::200]
+#df.head()
+#df.reset_index()
+
+#df.iloc[0,10] = df.iloc[0,1]
+#df.iloc[0,11] = df.iloc[0,6]
+#print (df.iloc[0,10])
+#print (df)
+#df.index = np.arange(0, len(df))
+#dataset.sort_values(by=['time'], inplace=True)
+#dataset.to_csv (Data+".st", index = False, header=True)
+#f = open("data.tmp.csv","w")
+#f.write(dataset)
+#f.close()
+#sns.ecdfplot(data=dataset, x="rtt")
+plt.figure(figsize=(15, 13))
+t1=sns.ecdfplot(data=c1data,x="rtt")
+t2=sns.ecdfplot(data=c8data,x="rtt")
+t3=sns.ecdfplot(data=b1data,x="rtt")
+t4=sns.ecdfplot(data=b8data,x="rtt")
+t4.tick_params(labelsize=44)
+t3.tick_params(labelsize=44)
+t2.tick_params(labelsize=44)
+t1.tick_params(labelsize=44)
+#sns.ecdfplot(data=b8data,x="rtt")
+'''
+sns.kdeplot(c8data.rtt,cumulative=True,legend=True, label = 'cubic.8ms')
+sns.kdeplot(b1data.rtt,cumulative=True,legend=True, label = 'bbr.1ms')
+sns.kdeplot(b8data.rtt,cumulative=True,legend=True, label = 'bbr.8ms')
+'''
+plt.ylabel('CDF',fontsize=51)
+plt.xlabel('Average RTT (ms)',fontsize=51)
+plt.legend(labels=['Cubic_Legacy','Cubic_RAPID', 'BBR_Legacy','BBR_RAPID'],fontsize=40)
+plt.savefig('ecdf.png')
+plt.savefig('ecdf.pdf')
+plt.show()
+#dataset.index = np.arange(0, len(dataset))
+#dataset.to_csv (output+"-mean.csv", index = True, header=False)
